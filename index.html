@@ -13,7 +13,8 @@
 <body>
     <header>
         <div class="container">
-            <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif;">Rocket Launch Window Predictor</h1>
+            <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif;">Rocket
+                Launch Window Predictor</h1>
             <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -43,7 +44,8 @@
                     <input type="date" class="form-control" id="date" name="date">
                 </div>
                 <div class="form-group">
-                    <label for="time" style="font-family: Arial, sans-serif; text-align: center;">Preferred time:</label>
+                    <label for="time" style="font-family: Arial, sans-serif; text-align: center;">Preferred
+                        time:</label>
                     <input type="time" class="form-control" id="time" name="time">
                 </div>
                 <div class="form-group">
@@ -55,21 +57,31 @@
                     <input type="text" class="form-control" id="long" name="long">
                 </div>
                 <div class="form-group">
-                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;">Target Altitude:</label>
+                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;">Target
+                        Altitude:</label>
                     <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000">
                 </div>
                 <button id="subbut" type="submit" class="btn btn-primary my-5">Submit</button>
             </form>
+            <div id="weatherDisplay" class="weather-data" style="display: none;">
+                <h3>Weather Information:</h3>
+                <p><span class="label">Temperature:</span> <span id="temperature"></span>°C</p>
+                <p><span class="label">Visibility:</span> <span id="visibility"></span> km</p>
+                <p><span class="label">Wind Speed:</span> <span id="wind_speed"></span> km/h</p>
+                <p><span class="label">Wind Direction:</span> <span id="wind_dir"></span></p>
+                <p><span class="label">Wind Degree:</span> <span id="wind_degree"></span>°</p>
+                <p><span class="label">Safe to Launch Status:</span><span id="safetyStatus"></span></p>
+            </div>
         </div>
     </main>
 
     <script>
         async function submitAPI(event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             const apiKey = "ede9bdc71170183ac05121894b3bec8c";
             const lat = document.getElementById('lat').value;
-            const long =document.getElementById('long').value;
+            const long = document.getElementById('long').value;
             const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${long}`;
 
             const options = {
@@ -78,13 +90,27 @@
 
             try {
                 const response = await fetch(url, options);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                
-                const result = await response.json();  
-                console.log(result);
+
+                const result = await response.json();
+                //console.log(result);
+                const temperature = result.current.temperature
+                const visibility = result.current.visibility
+                const wind_degree = result.current.wind_degree
+                const wind_dir = result.current.wind_dir
+                const wind_speed = result.current.wind_speed
+
+                document.getElementById('temperature').textContent = temperature;
+                document.getElementById('visibility').textContent = visibility;
+                document.getElementById('wind_speed').textContent = wind_speed;
+                document.getElementById('wind_dir').textContent = wind_dir;
+                document.getElementById('wind_degree').textContent = wind_degree;
+
+                // Make the weather display section visible
+                document.getElementById('weatherDisplay').style.display = 'block';
             } catch (error) {
                 console.error("Error fetching data: ", error);
             }
