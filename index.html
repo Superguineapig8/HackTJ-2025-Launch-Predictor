@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta lang="en">
     <meta charset="utf-8">
@@ -8,13 +9,15 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Launch Window Predictor</title>
 </head>
+
 <body>
     <header>
         <div class="container">
             <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif;">Rocket Launch Window Predictor</h1>
-            <nav class ="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false">
                     <span class="navbar-toggler-icon" style="color: white;"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -23,16 +26,18 @@
                             <a class="nav-link" href="about.html" style="color: white;">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor" style="color: white;">Github</a>
+                            <a class="nav-link" href="contact.html" style="color: white;">Contact</a>
                         </li>
                     </ul>
                 </div>
+            </nav>
         </div>
     </header>
     <main>
         <div class="container" style="padding-top: 5pt; font-family: Arial, sans-serif;">
+            <h2> Welcome to the Rocket Launch Window Predictor!</h2>
             <p style="font-size: 10pt;">Enter the following information to predict the next rocket launch window:</p>
-            <form action="submit.php" method="post">
+            <form onsubmit="submitAPI(event)">
                 <div class="form-group" style="font-family: Arial, sans-serif;">
                     <label for="date">Preferred date:</label>
                     <input type="date" class="form-control" id="date" name="date">
@@ -42,108 +47,49 @@
                     <input type="time" class="form-control" id="time" name="time">
                 </div>
                 <div class="form-group">
-                    <label for="startCord" style="font-family: Arial, sans-serif; text-align: center;">Starting Coordinates:</label>
-                    <input type="text" class="form-control" id="startCord" name="startCord">
+                    <label for="startCord" style="font-family: Arial, sans-serif; text-align: center;">Latitude:</label>
+                    <input type="text" class="form-control" id="lat" name="lat">
                 </div>
                 <div class="form-group">
-                    <label for="endCord" style="font-family: Arial, sans-serif; text-align: center;">Ending Coordinates:</label>
-                    <input type="text" class="form-control" id="endCord" name="endCord">
+                    <label for="endCord" style="font-family: Arial, sans-serif; text-align: center;">Longitude:</label>
+                    <input type="text" class="form-control" id="long" name="long">
                 </div>
                 <div class="form-group">
-                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;" aria-placeholder="In Feet">Target Altitude:</label>
+                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;">Target Altitude:</label>
                     <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000">
                 </div>
                 <button id="subbut" type="submit" class="btn btn-primary my-5">Submit</button>
-                <script>
-                    <button onclick="saveToSessionStorage()">Clicker</button>
-                </script>
             </form>
         </div>
     </main>
-    
+
     <script>
+        async function submitAPI(event) {
+            event.preventDefault(); 
 
-        function validateInput(){
-            let date = document.getElementById("date");
-            let time = document.getElementById("time");
-            let start = document.getElementById("startCord");
-            let end = document.getElementById("endCord");
-            let alt = document.getElementById("alt");
+            const apiKey = "ede9bdc71170183ac05121894b3bec8c";
+            const lat = document.getElementById('lat').value;
+            const long =document.getElementById('long').value;
+            const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${long}`;
 
-            let dateError = document.getElementById("dateError");
-            let timeError = document.getElementById("timeError");
-            let startError = document.getElementById("startError");
-            let endError = document.getElementById("endError");
-            let altError = document.getElementById("altError");
-            let valid = true;
+            const options = {
+                method: "GET",
+            };
 
-            dateError.innerText = "";
-            timeError.innerText = "";
-            startError.innerText = "";
-            endError.innerText = "";
-            altError .innerText = "";
-
-            if(!date.value) {
-                dateError.innerText = "Date is required";
-                valid = false;
+            try {
+                const response = await fetch(url, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();  
+                console.log(result);
+            } catch (error) {
+                console.error("Error fetching data: ", error);
             }
-
-            if(!time) {
-                timeError.innerText = "Time is required";
-                valid = false;
-            }
-
-            if(!start) {
-                startError.innerText = "Start Coordinates are required";
-                valid = false;
-            }
-
-            if(!end) {
-                endError.innerText = "End Coordinates are required";
-                valid = false;
-            }
-
-            if(!alt) {
-                altError.innerText = "Target Altitude is required";
-                valid = false;
-            }
-
-            
         }
-        function saveToSessionStorage() {
-        let inputDate = document.getElementById("date").value;
-        sessionStorage.setItem("storedInputDate", input);
-
-        let inputTime = document.getElementById("time").value;
-        sessionStorage.setItem("storedInputTime", input);
-
-        let inputStart = document.getElementById("startCord").value;
-        sessionStorage.setItem("storedInputStartCord", input);
-
-        let inputEnd = document.getElementById("endCord").value;
-        sessionStorage.setItem("storedInputEndCord", input);
-
-        let inputALT = document.getElementByALT("alt").value;
-        sessionStorage.setItem("storedInputALT", input);
-    }                
-
-    function loadFromSessionStorage() {
-        let storedInputDate = sessionStorage.getItem("storedInputDate");
-        document.getElementById("storedInputDate").innerText = "Loaded: " + (savedInput || "No data");
-
-        let storedTime = sessionStorage.getItem("storedInputTime");
-        document.getElementById("storedInputTime").innerText = "Loaded: " + (savedInput || "No data");
-
-        let storedStart = sessionStorage.getItem("storedInputStart");
-        document.getElementById("storedInputStartCord").innerText = "Loaded: " + (savedInput || "No data");
-
-        let stoedInputEnd = sessionStorage.getItem("storedInputEnd");
-        document.getElementById("storedInputEndCord").innerText = "Loaded: " + (savedInput || "No data");
-
-        let stoedInputALT = sessionStorage.getItem("storedInputALLT");
-        document.getElementById("storedInputALT").innerText = "Loaded: " + (savedInput || "No data");
-    }
-    
-    //alert(this.loadFromSessionStorage);
     </script>
+</body>
+
 </html>
