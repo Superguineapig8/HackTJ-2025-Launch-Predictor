@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Launch Window Predictor</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif;">Rocket Launch Window Predictor</h1>
+            <nav class ="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
+                <a class="navbar-brand" href="index.php" style="color: white;">Home</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
+                    <span class="navbar-toggler-icon" style="color: white;"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                    <h3>stick in description about how the heck this site works</h3>
+                    </ul>
+                </div>
+        </div>
+    </header>
+    <main>
+        <div class="container" style = "padding-top: 5pt; font-family: Arial, sans-serif;">
+            <h2> Welcome to the Rocket Launch Window Predictor!</h2>
+            <p style="text-size-adjust: 10";>Enter the following information to predict the next rocket launch window:</p>
+            <form action="submit.php" method="post">
+                <div class="form-group" style ="font-family: Arial, sans-serif;">
+                    <label for="date">Preferred date:</label>
+                    <input type="date" class="form-control" id="date" name="date">
+                </div>
+                <div class="form-group">
+                    <label for="time" style ="font-family: Arial, sans-serif; text-align: center;">Preferred time:</label>
+                    <input type="time" class="form-control" id="time" name="time">
+                </div>
+                <div class="form-group
+                ">
+                    <label for="startCord" style ="font-family: Arial, sans-serif; text-align: center;">Starting Coordinates:</label>
+                    <input type="text" class="form-control" id="startCord" name="startCord">
+                </div>
+                <div class="form-group
+                ">
+                    <label for="endCord" style ="font-family: Arial, sans-serif; text-align: center;">Ending Coordinates:</label>
+                    <input type="text" class="form-control" id="endCord" name="endCord">
+                </div>
+                <div class="form-group
+                ">
+                    <label for="subbut" style ="font-family: Arial, sans-serif; text-align: center;" aria-placeholder="In Feet">Target Altitude:</label>
+                    <input type="number" class="form-control" id="subbut" name="subbut" min="0" max="100000">
+                    <button type="submit" class="btn btn-primary">Submit</button>  
+                </div>
+                </form>
+            </div>
+        </main>
+    </body>
+    </main>
+    
+    <script>
+
+        function validateInput(){
+            let date = document.getElementById("date");
+            let time = document.getElementById("time");
+            let start = document.getElementById("start");
+            let end = document.getElementById("end");
+
+            let dateError = document.getElementById("dateError");
+            let timeError = document.getElementById("timeError");
+            let startError = document.getElementById("startError");
+            let endError = document.getElementById("endError");
+            let valid = true;
+
+            emailError.innerText = "";
+            ageError.innerText = "";
+            if(!email) {
+                emailError.innerText = "Email is required";
+                valid = false;
+            }
+
+            
+        }
+        function saveToSessionStorage() {
+        let inputDate = document.getElementById("date").value;
+        sessionStorage.setItem("storedInputDate", input);
+        let inputTime = document.getElementById("time").value;
+        sessionStorage.setItem("storedInputTime", input);
+        let inputStart = document.getElementById("startCord").value;
+        sessionStorage.setItem("storedInputStartCord", input);
+        let inputEnd = document.getElementById("endCord").value;
+        sessionStorage.setItem("storedInputEndCord", input);
+
+        
+    }                
+
+    function loadFromSessionStorage() {
+        let storedInputDate = sessionStorage.getItem("storedInputDate");
+        document.getElementById("output").innerText = "Loaded: " + (savedInput || "No data");
+        let storedTime = sessionStorage.getItem("storedInputTime");
+        document.getElementById("output").innerText = "Loaded: " + (savedInput || "No data");
+        let storedStart = sessionStorage.getItem("storedInputStart");
+        document.getElementById("output").innerText = "Loaded: " + (savedInput || "No data");
+        let stoedInputEnd = sessionStorage.getItem("storedInputEnd");
+        document.getElementById("output").innerText = "Loaded: " + (savedInput || "No data");
+    }
+    </script>
+</html>
