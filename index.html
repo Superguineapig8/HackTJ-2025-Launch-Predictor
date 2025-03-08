@@ -1,20 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta lang="en">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Launch Window Predictor</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Launch Window Predictor</title>
+    <style>
+        .weather-data {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+        .img{
+        float: right;
+    }
+    </style>
 </head>
 
 <body>
     <header>
         <div class="container">
-            <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif;">Rocket
-                Launch Window Predictor</h1>
+            <h1 class="text-center" style="color: black; font-family: Arial, sans-serif;">Rocket Launch Window Predictor</h1>
             <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -34,35 +47,38 @@
             </nav>
         </div>
     </header>
+    
     <main>
         <div class="container" style="padding-top: 5pt; font-family: Arial, sans-serif;">
-            <h2> Welcome to the Rocket Launch Window Predictor!</h2>
+            <div class="img"><img src="rocket.png" width="200"></div>
+            <h2>Welcome to the Rocket Launch Window Predictor!</h2>
             <p style="font-size: 10pt;">Enter the following information to predict the next rocket launch window:</p>
+            <br><br><br><br><br>
             <form onsubmit="submitAPI(event)">
                 <div class="form-group" style="font-family: Arial, sans-serif;">
                     <label for="date">Preferred date:</label>
                     <input type="date" class="form-control" id="date" name="date">
                 </div>
                 <div class="form-group">
-                    <label for="time" style="font-family: Arial, sans-serif; text-align: center;">Preferred
-                        time:</label>
+                    <label for="time" style="font-family: Arial, sans-serif; text-align: center;">Preferred time:</label>
                     <input type="time" class="form-control" id="time" name="time">
                 </div>
                 <div class="form-group">
-                    <label for="startCord" style="font-family: Arial, sans-serif; text-align: center;">Latitude:</label>
-                    <input type="text" class="form-control" id="lat" name="lat">
+                    <label for="lat" style="font-family: Arial, sans-serif; text-align: center;">Latitude:</label>
+                    <input type="text" class="form-control" id="lat" name="lat" required>
                 </div>
                 <div class="form-group">
-                    <label for="endCord" style="font-family: Arial, sans-serif; text-align: center;">Longitude:</label>
-                    <input type="text" class="form-control" id="long" name="long">
+                    <label for="long" style="font-family: Arial, sans-serif; text-align: center;">Longitude:</label>
+                    <input type="text" class="form-control" id="long" name="long" required>
                 </div>
                 <div class="form-group">
-                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;">Target
-                        Altitude:</label>
+                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center;">Target Altitude:</label>
                     <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000">
                 </div>
                 <button id="subbut" type="submit" class="btn btn-primary my-5">Submit</button>
             </form>
+
+            <!-- Placeholder for weather data display -->
             <div id="weatherDisplay" class="weather-data" style="display: none;">
                 <h3>Weather Information:</h3>
                 <p><span class="label">Temperature:</span> <span id="temperature"></span>°C</p>
@@ -70,39 +86,37 @@
                 <p><span class="label">Wind Speed:</span> <span id="wind_speed"></span> km/h</p>
                 <p><span class="label">Wind Direction:</span> <span id="wind_dir"></span></p>
                 <p><span class="label">Wind Degree:</span> <span id="wind_degree"></span>°</p>
-                <p><span class="label">Safe to Launch Status:</span><span id="safetyStatus"></span></p>
+                <button id="downloadBtn" class="btn btn-success">Download CSV</button>
             </div>
         </div>
     </main>
 
     <script>
         async function submitAPI(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent form submission
 
             const apiKey = "ede9bdc71170183ac05121894b3bec8c";
             const lat = document.getElementById('lat').value;
             const long = document.getElementById('long').value;
             const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${long}`;
 
-            const options = {
-                method: "GET",
-            };
-
             try {
-                const response = await fetch(url, options);
+                const response = await fetch(url);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
                 const result = await response.json();
-                //console.log(result);
-                const temperature = result.current.temperature
-                const visibility = result.current.visibility
-                const wind_degree = result.current.wind_degree
-                const wind_dir = result.current.wind_dir
-                const wind_speed = result.current.wind_speed
+                
+                // Extract data from the JSON response
+                const temperature = result.current.temperature;
+                const visibility = result.current.visibility;
+                const wind_speed = result.current.wind_speed;
+                const wind_degree = result.current.wind_degree;
+                const wind_dir = result.current.wind_dir;
 
+                // Display the weather data
                 document.getElementById('temperature').textContent = temperature;
                 document.getElementById('visibility').textContent = visibility;
                 document.getElementById('wind_speed').textContent = wind_speed;
@@ -111,9 +125,35 @@
 
                 // Make the weather display section visible
                 document.getElementById('weatherDisplay').style.display = 'block';
+
+                // Enable the download button
+                document.getElementById('downloadBtn').addEventListener('click', function() {
+                    downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
+                });
             } catch (error) {
                 console.error("Error fetching data: ", error);
+                alert("Error fetching weather data.");
             }
+        }
+
+        function downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir) {
+            // Prepare the CSV data
+            const csvData = [
+                ['Temperature', 'Visibility', 'Wind Speed', 'Wind Direction', 'Wind Degree'],
+                [temperature, visibility, wind_speed, wind_dir, wind_degree]
+            ];
+
+            // Convert array to CSV format
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+
+            // Create a Blob object with the CSV content
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'weather_data.csv';
+
+            // Programmatically click the link to trigger the download
+            link.click();
         }
     </script>
 </body>
