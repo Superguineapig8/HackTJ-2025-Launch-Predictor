@@ -1,2 +1,2 @@
 # HackTJ 2025 Launch Predictor
- Easy way to change stuff
+ A website that makes it easy for you to find the best times to launch your rockets.
