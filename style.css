@@ -1,0 +1,37 @@
+
+#map {
+    height: 400px;
+     width: 100%;
+}
+
+:root {
+    --color-primary: #6A1B9A ;
+    --color-secondary: #283593;
+    --color-tertiary: #8E24AA;
+    --color-quaternary: #D1C4E9 ;
+    --color-quinary: #000000;
+}[data-theme="dark"] {
+    --color-primary: #9C27B0;
+    --color-secondary: #1565C0;
+    --color-tertiary: #AB47BC;
+    --color-quaternary: #673AB7;
+    --color-quinary: #FFFFFF;
+}
+button:hover {
+    opacity: 0.8; 
+}
+.weather-data {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+    .label {
+        font-weight: bold;
+    }
+
+    .img {
+        float: right;
+    }
+}
