@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import numpy as np
 import requests
+import sys
+print(sys.path)
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
