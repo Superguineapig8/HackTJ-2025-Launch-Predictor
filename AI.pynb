@@ -1,46 +1,135 @@
-import pandas as pdt_split
-from sklearn.ensemble imort RandomForestRegressor
 import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+import requests
 
-# Example data structure for input
-data = {
-    'Wind': [10, 15, 8, 12],
-    'Temperature': [20, 18, 22, 19],
-    'Cloud_Cover': [40, 50, 20, 30],  # in percentage
-    'Lightning_Chance': [0.1, 0.3, 0.05, 0.2],  # 0 to 1
-    'Precipitation': [5, 10, 0, 3],  # mm
-    'AM_PM': [0, 1, 0, 1],  # 0 for AM, 1 for PM
-    'Launch_Score': [7, 5, 9, 6]  # Target score
-}
+# Setup the Open-Meteo API client
+def get_historical_weather(date, latitude, longitude):
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": "precipitation,wind_speed_10m,temperature_2m",
+        "timezone": "America/New_York"
+    }
 
-# Load data into a DataFrame
-df = pd.DataFrame(data)
+    # Request the weather data
+    response = requests.get(url, params=params).json()
+    if "hourly" in response:
+        hourly_data = response["hourly"]
+        precipitation = np.mean(hourly_data['precipitation'])
+        wind_speed = np.mean(hourly_data['wind_speed_10m'])
+        temperature = np.mean(hourly_data['temperature_2m'])
+        return precipitation, wind_speed, temperature
+    return None, None, None
 
-# Split dataset into features and target variable
-X = df[['Wind', 'Temperature', 'Cloud_Cover', 'Lightning_Chance', 'Precipitation', 'AM_PM']]
-y = df['Launch_Score']
+def is_valid_date(date_string):
+    try:
+        # Validate MM-DD-YYYY format
+        datetime.strptime(date_string, "%m-%d-%Y")
+        return True
+    except ValueError:
+        return False
 
-# Split into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def convert_to_fahrenheit(celsius):
+    """Convert temperature from Celsius to Fahrenheit."""
+    return (celsius * 9/5) + 32
 
-# Use a Random Forest Regressor to model the data
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+def calculate_score(precipitation, wind_speed, temperature_fahrenheit):
+    """Calculate a score from 0 to 100 based on weather conditions."""
+    # Precipitation score (0: no precipitation, 100: heavy precipitation)
+    if precipitation == 0:
+        precip_score = 100
+    elif precipitation < 0.1:
+        precip_score = 80
+    elif precipitation < 0.5:
+        precip_score = 60
+    else:
+        precip_score = 20
 
-# Predict scores for new days
-new_data = pd.DataFrame({
-    'Wind': [10, 12],
-    'Temperature': [21, 19],
-    'Cloud_Cover': [30, 40],
-    'Lightning_Chance': [0.1, 0.2],
-    'Precipitation': [2, 3],
-    'AM_PM': [0, 1]
-})
+    # Wind speed score (0: low wind, 100: high wind)
+    if wind_speed < 5:
+        wind_score = 100
+    elif wind_speed < 15:
+        wind_score = 70
+    else:
+        wind_score = 30
 
-predicted_scores = model.predict(new_data)
+    # Temperature score (ideal temperature between 60-80°F)
+    if 60 <= temperature_fahrenheit <= 80:
+        temp_score = 100
+    elif 50 <= temperature_fahrenheit < 60 or 80 < temperature_fahrenheit <= 90:
+        temp_score = 70
+    else:
+        temp_score = 40
 
-# Determine the best day
-best_day_index = np.argmax(predicted_scores)
-best_day_score = predicted_scores[best_day_index]
+    # Calculate average score
+    avg_score = (precip_score + wind_score + temp_score) / 3
+    return avg_score
 
-print(f"Best day for launch: Day {best_day_index + 1} with score {best_day_score}")
+def calculate_average_weather():
+    latitude = float(input("Enter latitude of launch site (e.g., 30.5): "))
+    longitude = float(input("Enter longitude of launch site (e.g., -97.7): "))
+
+    start_date = input("Enter start date for calculation (MM-DD-YYYY): ")
+    while not is_valid_date(start_date):
+        print("Invalid date format. Please enter a valid date (MM-DD-YYYY).")
+        start_date = input("Enter start date for calculation (MM-DD-YYYY): ")
+
+    end_date = input("Enter end date for calculation (MM-DD-YYYY): ")
+    while not is_valid_date(end_date):
+        print("Invalid date format. Please enter a valid date (MM-DD-YYYY).")
+        end_date = input("Enter end date for calculation (MM-DD-YYYY): ")
+
+    # Parse dates
+    current_date = datetime.strptime(start_date, "%m-%d-%Y")
+    end_date = datetime.strptime(end_date, "%m-%d-%Y")
+
+    # Variables to accumulate weather data
+    total_precipitation = 0
+    total_wind_speed = 0
+    total_temperature = 0
+    valid_days_count = 0
+    total_scores = 0
+
+    # Loop through each day in the date range
+    while current_date <= end_date:
+        date_str = current_date.strftime("%m-%d-%Y")
+        print(f"Checking weather for {date_str}...")
+
+        # Get the weather data
+        precipitation, wind_speed, temperature = get_historical_weather(date_str, latitude, longitude)
+
+        if precipitation is not None and wind_speed is not None and temperature is not None:
+            # Convert temperature to Fahrenheit
+            temperature_fahrenheit = convert_to_fahrenheit(temperature)
+
+            # Calculate score for the day
+            score = calculate_score(precipitation, wind_speed, temperature_fahrenheit)
+
+            total_precipitation += precipitation
+            total_wind_speed += wind_speed
+            total_temperature += temperature
+            total_scores += score
+            valid_days_count += 1
+
+        # Move to the next day
+        current_date += timedelta(days=1)
+
+    # Calculate averages
+    if valid_days_count > 0:
+        avg_precipitation = total_precipitation / valid_days_count
+        avg_wind_speed = total_wind_speed / valid_days_count
+        avg_temperature = total_temperature / valid_days_count
+        avg_score = total_scores / valid_days_count
+
+        print(f"\nAverage Weather from {start_date} to {end_date}:")
+        print(f"Average Precipitation: {avg_precipitation:.2f} mm")
+        print(f"Average Wind Speed: {avg_wind_speed:.2f} km/h")
+        print(f"Average Temperature: {convert_to_fahrenheit(avg_temperature):.2f} °F")
+        print(f"Average Launch Suitability Score: {avg_score:.2f} out of 100")
+    else:
+        print("\nNo valid weather data found for the given date range.")
+
+# Call the function to calculate the average weather data
+calculate_average_weather()
