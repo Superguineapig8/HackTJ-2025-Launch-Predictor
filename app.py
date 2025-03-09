@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 import numpy as np
 import requests
 import sys
-print(sys.path)
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -25,6 +24,8 @@ def get_historical_weather(latitude, longitude):
             wind_speed = np.mean(hourly_data['wind_speed_10m'])
             temperature = np.mean(hourly_data['temperature_2m'])
             return precipitation, wind_speed, temperature
+        else:
+            print("No hourly data found in the API response.")
     except requests.RequestException as e:
         print(f"Error fetching weather data: {e}")
     return None, None, None
@@ -47,19 +48,27 @@ def convert_time_to_value(time_str):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        latitude = float(request.form["latitude"])
-        longitude = float(request.form["longitude"])
-        start_date = request.form["start_date"]
-        end_date = request.form["end_date"]
-        start_time = request.form["start_time"]
-        end_time = request.form["end_time"]
-        target_altitude = float(request.form["altitude"])
+        try:
+            latitude = float(request.form["latitude"])
+            longitude = float(request.form["longitude"])
+            start_date = request.form["start_date"]
+            end_date = request.form["end_date"]
+            start_time = request.form["start_time"]
+            end_time = request.form["end_time"]
+            target_altitude = float(request.form["altitude"])
+        except ValueError as e:
+            print(f"Error in form input: {e}")
+            return render_template("index.html", result=None)
 
         start_time_value = convert_time_to_value(start_time)
         end_time_value = convert_time_to_value(end_time)
 
-        current_date = datetime.strptime(start_date, "%m-%d-%Y")
-        end_date = datetime.strptime(end_date, "%m-%d-%Y")
+        try:
+            current_date = datetime.strptime(start_date, "%m-%d-%Y")
+            end_date = datetime.strptime(end_date, "%m-%d-%Y")
+        except ValueError as e:
+            print(f"Error in date format: {e}")
+            return render_template("index.html", result=None)
 
         total_precipitation = 0
         total_wind_speed = 0
