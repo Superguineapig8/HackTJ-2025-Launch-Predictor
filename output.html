@@ -1,68 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Output</title>
+    <!-- Add Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
 <body style="background-color: rgb(240, 240, 240);">
     <header>
         <div class="container-fluid">
-            <h1 class="textcenter"
-                style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">
+            <h1 class="text-center"
+                style="color: black; font-family: 'Space Mono', monospace; padding-top: 30px;padding-bottom: 30px">
                 Kairos Launch</h1>
-            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
-                <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false">
-""                    <span class="navbar-toggler-icon" style="color: white;"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="about.html" style="color: white;">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor"
-                                style="color: white;">Github</a>
-                        </li>
-                    </ul>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container">
+                    <a class="navbar-brand" href="index.html">Home</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="about.html">About</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor">GitHub</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h2 class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;">Kairos Launch</h2>
-                <p class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">
-                    The most optimized predicted launch date is: {{ launch_date }}</p>
-                <button id="downloadBtn" class="btn btn-primary" style="margin-left: 45%; margin-right: 45%;">Download CSV</button>
-                <!-- Removed duplicate button -->
-            </div>
-        </div>
+    <div class="container text-center">
+        <h2 style="color: black; font-family: 'Space Mono', monospace; padding-top: 30px;">Kairos Launch</h2>
+        <p style="color: black; font-family: 'Space Mono', monospace; padding-top: 30px; padding-bottom: 30px;">
+            The most optimized predicted launch date is: <strong>{{ launch_date }}</strong>
+        </p>
+        <button id="downloadBtn" class="btn btn-primary">Download CSV</button>
     </div>
-<script>
+
+    <div class="container mt-4">
+        {% if result %}
+        <h2>Average Weather Data</h2>
+        <p><strong>Average Precipitation:</strong> {{ result.avg_precipitation }} mm</p>
+        <p><strong>Average Wind Speed:</strong> {{ result.avg_wind_speed }} km/h</p>
+        <p><strong>Average Temperature:</strong> {{ result.avg_temperature }} °F</p>
+        <p><strong>Average Launch Suitability Score:</strong> {{ result.avg_score }} out of 100</p>
+        <p><strong>Target Altitude:</strong> {{ result.target_altitude }} meters</p>
+        {% endif %}
+    </div>
+
+    <script>
         document.getElementById('downloadBtn').addEventListener('click', function () {
-                    downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
-                });
+            const data = [
+                ["Average Precipitation", "{{ result.avg_precipitation }} mm"],
+                ["Average Wind Speed", "{{ result.avg_wind_speed }} km/h"],
+                ["Average Temperature", "{{ result.avg_temperature }} °F"],
+                ["Average Launch Suitability Score", "{{ result.avg_score }} / 100"],
+                ["Target Altitude", "{{ result.target_altitude }} meters"]
+            ];
 
-</script>
+            let csvContent = "data:text/csv;charset=utf-8," + data.map(e => e.join(",")).join("\n");
 
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "launch_data.csv");
+            document.body.appendChild(link);
+            link.click();
+        });
+    </script>
 
-  <?php if ($result): ?>
-    <h2>Average Weather Data</h2>
-    <p>Average Precipitation: <?php echo $result['avg_precipitation']; ?> mm</p>
-    <p>Average Wind Speed: <?php echo $result['avg_wind_speed']; ?> km/h</p>
-    <p>Average Temperature: <?php echo $result['avg_temperature']; ?> °F</p>
-    <p>Average Launch Suitability Score: <?php echo $result['avg_score']; ?> out of 100</p>
-    <p>Target Altitude: <?php echo $result['target_altitude']; ?> meters</p>
-  <?php endif; ?>
-
-
-
-
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 
 </html>
