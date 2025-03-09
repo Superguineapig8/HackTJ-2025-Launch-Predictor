@@ -7,17 +7,33 @@
     <meta name="description" content="Kairos Launch">
     <meta name="keywords" content="Kairos, Launch, Rocket, Space, HackTJ, Predictor, Rocketry">
     <meta name="author" content="HackTJ Team 2025"> 
-    <link 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <title>Kairos Launch</title>
+    <style>
+        .weather-data {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+        .img{
+        float: right;
+    }
+    </style>
 </head>
 <body style="background-color: rgb(40, 92, 223);">
     <header>
         <div class="container-fluid">
-            <h1 class="textcenter" style="color: black; text-align: center; font-family: Arial, sans-serif; padding-bottom: 20px;">Kairos Launch</h1>
+            <h1 class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">Kairos Launch</h1>
             <nav class ="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
@@ -40,7 +56,7 @@
             <p style="font-size: 15px;">Enter the following information to predict the next rocket launch window:</p>
             <form action="submit.php" method="post">
                 <div class="form-group" style="font-family: Arial, sans-serif;">
-                    <label for="date">Preferred date:</label>
+                    <label for="date" style="color: secondary;">Preferred date:</label>
                     <input type="date" class="form-control" id="date" name="date">
                 </div>
                 <div class="form-group">
@@ -56,17 +72,26 @@
                             }
                         });
                     </script></script>
+                    <div id="weatherDisplay" class="weather-data" style="display: none;">
+                        <h3>Weather Information:</h3>
+                        <p><span class="label">Temperature:</span> <span id="temperature"></span>°C</p>
+                        <p><span class="label">Visibility:</span> <span id="visibility"></span> km</p>
+                        <p><span class="label">Wind Speed:</span> <span id="wind_speed"></span> km/h</p>
+                        <p><span class="label">Wind Direction:</span> <span id="wind_dir"></span></p>
+                        <p><span class="label">Wind Degree:</span> <span id="wind_degree"></span>°</p>
+                        <button id="downloadBtn" class="btn btn-success">Download CSV</button>
+                    </div>
                 </div>
 
                 <div class="container-fluid">
     <h2>Select a Start on the Map Below</h2>  
     <div id="map" style="height: 500px;">
         </div>
-
+    <div> 
     <p>Launch Coordinates: <span id="launchcoord">Not Selected</span></p>
-
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script>
+       <script>
         var map = L.map('map').setView([38.92171859741211, -77.23397064208984], 13); // Default to Cvent HQ
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -82,17 +107,12 @@
                 map.removeLayer(launchMarker);
             }
             launchMarker = L.marker(e.latlng).addTo(map);
-            document.getElementById("launchcoord").innerText = `Lat: ${e.latlng.lat}, Lng: ${e.latlng.lng}`;
+        document.getElementById("launchcoord").innerText = `${e.latlng.lat}, ${e.latlng.lng}`;
         });
-    </script>
+        </script>
+    </div>
 </div>
-
-                
-                </div>
                
-
-
-
                 <div class="form-group">
                     <label for="startCord" style="font-family: Arial, sans-serif; text-align: center;">Starting Coordinates:</label>
                     <input type="text" class="form-control" id="startCord" name="startCord">
@@ -174,13 +194,70 @@
         let stoedInputALT = sessionStorage.getItem("storedInputALT");
         document.getElementById("alt").value = storedInputALT || "";
     }
-    
-    //alert(this.loadFromSessionStorage);
+    <script>
+        async function submitAPI(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const apiKey = "ede9bdc71170183ac05121894b3bec8c";
+            const lat = document.getElementById('lat').value;
+            const long = document.getElementById('long').value;
+            const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${long}`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Extract data from the JSON response
+                const temperature = result.current.temperature;
+                const visibility = result.current.visibility;
+                const wind_speed = result.current.wind_speed;
+                const wind_degree = result.current.wind_degree;
+                const wind_dir = result.current.wind_dir;
+
+                // Display the weather data
+                document.getElementById('temperature').textContent = temperature;
+                document.getElementById('visibility').textContent = visibility;
+                document.getElementById('wind_speed').textContent = wind_speed;
+                document.getElementById('wind_dir').textContent = wind_dir;
+                document.getElementById('wind_degree').textContent = wind_degree;
+
+                // Make the weather display section visible
+                document.getElementById('weatherDisplay').style.display = 'block';
+
+                // Enable the download button
+                document.getElementById('downloadBtn').addEventListener('click', function() {
+                    downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
+                });
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                alert("Error fetching weather data.");
+            }
+        }
+
+        function downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir) {
+            // Prepare the CSV data
+            const csvData = [
+                ['Temperature', 'Visibility', 'Wind Speed', 'Wind Direction', 'Wind Degree'],
+                [temperature, visibility, wind_speed, wind_dir, wind_degree]
+            ];
+
+            // Convert array to CSV format
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+
+            // Create a Blob object with the CSV content
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'weather_data.csv';
+
+            // Programmatically click the link to trigger the download
+            link.click();
+        }
     </script>
-    <footer>
-        <div class="container-fluid">
-            <p style="font-family: Arial, sans-serif; text-align: center;">Created by Team 2025</p>
-        </div>
-    </footer>
 </body>
 </html>
