@@ -52,27 +52,44 @@
             <p style="font-size: 15px;">Enter the following information to predict the next rocket launch window, type or use the map:</p>
 
             <form onsubmit="submitAPI(event)">
+                
                 <div class="form-group" style="font-family: Arial, sans-serif;">
-                    <label for="start" style="text-align: center; margin: auto; padding-top: 20px">Preferred Launch Start Date:</label>
-                    <input type="date" id="start"
-                        style="margin-left: 10px; width: 200px; height: 40px; text-align: center;">
+                    <label for="start" style="display: block; margin-top: 10px;">Preferred Start Launch Date:</label>
+                    <input type="date" id="start" style="width: 200px; height: 40px; display: block;" oninput="calculateStartEndDates()">
+                </div>
+                <div class="form-group
+                
+                    <label for="end" style="display: block; margin-top: 20px;">Preferred End Launch Date (Autofilled):</label>
+                    <input type="date" id="end" style="width: 200px; height: 40px; display: block;" readonly>
 
                 </div>
-                <label for="end" style="text-align: center; margin: auto; padding-top: 20px">Preferred Launch End Date (Auto-filled):</label>
-                <input type="date" id="end" style="margin-left: 10px; width: 200px; height: 40px; text-align: center;" readonly>
+                
 
                 <div class="form-group">
                     <label for="time"
-                        style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 20px">Preferred
+                        style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 10px">Preferred
                         time:</label>
                     <input type="time" class="form-control" id="time" name="time"
                         style="width: 200px; height: 40px; text-align: center;">
                 </div>
 
                 <div class="form-group">
-                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 20px">Target
+                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 10px">Target
                         Altitude (in feet):</label>
                     <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000"
+                        style="width: 200px; height: 50px; text-align: center;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lat" style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 10px">Latitude
+                        Coordinates:</label>
+                    <input type="text" class="form-control" id="lat" name="lat"
+                        style="width: 200px; height: 50px; text-align: center">
+                </div>
+                <div class="form-group">
+                    <label for="lng" style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 10px">Longitude
+                        Coordinates:</label>
+                    <input type="text" class="form-control" id="lng" name="lng"
                         style="width: 200px; height: 50px; text-align: center;">
                 </div>
                        
@@ -91,20 +108,12 @@
              </div> 
         </div>
 
-        <div class="form-group">
-            <label for="lat" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Latitude
-                Coordinates:</label>
-            <input type="text" class="form-control" id="lat" name="lat"
-                style="width: 200px; height: 50px; text-align: center">
-        </div>
-        <div class="form-group">
-            <label for="lng" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Longitude
-                Coordinates:</label>
-            <input type="text" class="form-control" id="lng" name="lng"
-                style="width: 200px; height: 50px; text-align: center;">
+    
+        
+        <div style="text-align: center; margin-top: 10px;">
+            <button id="subbut" type="submit" class="btn btn-primary my-3 btn-lrg">Submit</button>
         </div>
         
-        <button id="subbut" type="submit" class="btn btn-primary my-3 btn-lrg">Submit</button>
 
         <div id="weatherDisplay" class="weather-data" style="display: none;">
             <h3>Weather Information:</h3>
@@ -138,64 +147,24 @@
                     }
                     launchMarker = L.marker(e.latlng).addTo(map);
                     document.getElementById("launchcoord").innerText = `${e.latlng.lat}, ${e.latlng.lng}`;
+                    document.getElementById("lat").value = e.latlng.lat;
+                    document.getElementById("lng").value = e.latlng.lng;
                 });
-
-                const start = document.getElementById('start');
-
-                    start.addEventListener('change', function () {
-                        const startDate = new Date(start.value);
-                        const endDate = new Date(startDate);
-                        endDate.setDate(startDate.getDate() + 7);
-                        end.value = endDate.toISOString().split('T')[0];
-                    });
-
-        function validateInput() {
-            let date = document.getElementById("date");
-            let time = document.getElementById("time");
-            let lat = document.getElementById("lat");
-            let lng = document.getElementById("lng");
-            let alt = document.getElementById("alt");
-
-            let dateError = document.getElementById("dateError");
-            let timeError = document.getElementById("timeError");
-            let latError = document.getElementById("latError");
-            let lngError = document.getElementById("lngError");
-            let altError = document.getElementById("altError");
-            let valid = true;
-
-            dateError.innerText = "";
-            timeError.innerText = "";
-            latError.innerText = "";
-            lngError.innerText = "";
-            altError.innerText = "";
-
-            if (!date.value) {
-                dateError.innerText = "Date is required";
-                valid = false;
+    
+        function calculateStartEndDates() {
+            let startDate = document.getElementById("start").value;
+            if (startDate) {
+                let start = new Date(startDate);
+                start.setDate(start.getDate() + 8);
+                let month = (start.getMonth() + 1).toString().padStart(2, '0'); 
+                let day = start.getDate().toString().padStart(2, '0');
+                let year = start.getFullYear();
+                let formattedEndDate = `${year}-${month}-${day}`;  
+                document.getElementById("end").value = formattedEndDate;
             }
-
-            if (!time) {
-                timeError.innerText = "Time is required";
-                valid = false;
-            }
-
-            if (!lat) {
-                latError.innerText = "Latatude Coordinates are required";
-                valid = false;
-            }
-
-            if (!lng) {
-                lngError.innerText = "Longitude Coordinates are required";
-                valid = false;
-            }
-
-            if (!alt) {
-                altError.innerText = "Target Altitude is required";
-                valid = false;
-            }
-
-
         }
+
+
         function saveToSessionStorage() {
             let inputStart = document.getElementById("start").value;
             sessionStorage.setItem("storedInputStart", inputDate);
@@ -241,8 +210,13 @@
             event.preventDefault(); // Prevent form submission
 
             const apiKey = "ede9bdc71170183ac05121894b3bec8c";
+            const startdate = document.getElementById('start').value;
+            const enddate = document.getElementById('end').value;
+            const time = document.getElementById('time').value;
+            
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
+            
             const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${lng}`;
 
             try {
