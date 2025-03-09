@@ -16,7 +16,7 @@
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false">
-                    <span class="navbar-toggler-icon" style="color: white;"></span>
+""                    <span class="navbar-toggler-icon" style="color: white;"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
@@ -29,24 +29,37 @@
                         </li>
                     </ul>
                 </div>
+            </nav>
         </div>
     </header>
 
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h2 class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;">
-                    Output</h2>
-                <p class="textcenter
-                    style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">
-                    The most optimized predicted launch date is: <?php echo $_POST["launch_date"]; ?></p>
-                
+                <h2 class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;">Kairos Launch</h2>
+                <p class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">
+                    The most optimized predicted launch date is: {{ launch_date }}</p>
+                <button id="downloadBtn" class="btn btn-primary" style="margin-left: 45%; margin-right: 45%;">Download CSV</button>
+                <!-- Removed duplicate button -->
             </div>
         </div>
     </div>
+<script>
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+                    downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
+                });
+
+</script>
 
 
-
+  <?php if ($result): ?>
+    <h2>Average Weather Data</h2>
+    <p>Average Precipitation: <?php echo $result['avg_precipitation']; ?> mm</p>
+    <p>Average Wind Speed: <?php echo $result['avg_wind_speed']; ?> km/h</p>
+    <p>Average Temperature: <?php echo $result['avg_temperature']; ?> °F</p>
+    <p>Average Launch Suitability Score: <?php echo $result['avg_score']; ?> out of 100</p>
+    <p>Target Altitude: <?php echo $result['target_altitude']; ?> meters</p>
+  <?php endif; ?>
 
 
 
