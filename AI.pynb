@@ -1,0 +1,46 @@
+import pandas as pdt_split
+from sklearn.ensemble imort RandomForestRegressor
+import numpy as np
+
+# Example data structure for input
+data = {
+    'Wind': [10, 15, 8, 12],
+    'Temperature': [20, 18, 22, 19],
+    'Cloud_Cover': [40, 50, 20, 30],  # in percentage
+    'Lightning_Chance': [0.1, 0.3, 0.05, 0.2],  # 0 to 1
+    'Precipitation': [5, 10, 0, 3],  # mm
+    'AM_PM': [0, 1, 0, 1],  # 0 for AM, 1 for PM
+    'Launch_Score': [7, 5, 9, 6]  # Target score
+}
+
+# Load data into a DataFrame
+df = pd.DataFrame(data)
+
+# Split dataset into features and target variable
+X = df[['Wind', 'Temperature', 'Cloud_Cover', 'Lightning_Chance', 'Precipitation', 'AM_PM']]
+y = df['Launch_Score']
+
+# Split into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Use a Random Forest Regressor to model the data
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Predict scores for new days
+new_data = pd.DataFrame({
+    'Wind': [10, 12],
+    'Temperature': [21, 19],
+    'Cloud_Cover': [30, 40],
+    'Lightning_Chance': [0.1, 0.2],
+    'Precipitation': [2, 3],
+    'AM_PM': [0, 1]
+})
+
+predicted_scores = model.predict(new_data)
+
+# Determine the best day
+best_day_index = np.argmax(predicted_scores)
+best_day_score = predicted_scores[best_day_index]
+
+print(f"Best day for launch: Day {best_day_index + 1} with score {best_day_score}")
