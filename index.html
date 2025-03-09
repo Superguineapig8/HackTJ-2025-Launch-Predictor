@@ -1,42 +1,37 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta lang="en">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Kairos Launch">
     <meta name="keywords" content="Kairos, Launch, Rocket, Space, HackTJ, Predictor, Rocketry">
-    <meta name="author" content="HackTJ Team 2025"> 
+    <meta name="author" content="HackTJ Team 2025">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/pikaday.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <title>Kairos Launch</title>
-    <style>
-        .weather-data {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+    <icon src="favicon.ico">
 
-            .label {
-                font-weight: bold;
-            }
-            .img{
-            float: right;
-        }
-    }
-    </style>
+    <title>Kairos Launch</title>
+
 </head>
-<body style="background-color: rgb(40, 92, 223);">
+
+<body style="background-color: rgb(240, 240, 240);">
     <header>
         <div class="container-fluid">
-            <h1 class="textcenter" style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">Kairos Launch</h1>
-            <nav class ="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
+            <h1 class="textcenter"
+                style="color: black; text-align: center; font-family: space mono; padding-top: 30px;padding-bottom: 30px">
+                Kairos Launch</h1>
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false">
                     <span class="navbar-toggler-icon" style="color: white;"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -45,7 +40,8 @@
                             <a class="nav-link" href="about.html" style="color: white;">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor" style="color: white;">Github</a>
+                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor"
+                                style="color: white;">Github</a>
                         </li>
                     </ul>
                 </div>
@@ -53,228 +49,258 @@
     </header>
     <main>
         <div class="container" style="padding-top: 5pt; font-family: Arial, sans-serif;">
-            <p style="font-size: 15px;">Enter the following information to predict the next rocket launch window:</p>
-            <form action="submit.php" method="post">
+            <p style="font-size: 15px;">Enter the following information to predict the next rocket launch window, type or use the map:</p>
+
+            <form onsubmit="submitAPI(event)">
                 <div class="form-group" style="font-family: Arial, sans-serif;">
-                    <label for="date" style="color: secondary; text-align: center; margin: auto;">Preferred date:</label>
-                    <input type="date" class="form-control" id="date" name="date" style="width: 200px; height: 50px; text-align: center;">
+                    <label for="start" style="text-align: center; margin: auto; padding-top: 20px">Preferred Launch Start Date:</label>
+                    <input type="date" id="start"
+                        style="margin-left: 10px; width: 200px; height: 40px; text-align: center;">
+
                 </div>
+                <label for="end" style="text-align: center; margin: auto; padding-top: 20px">Preferred Launch End Date (Auto-filled):</label>
+                <input type="date" id="end" style="margin-left: 10px; width: 200px; height: 40px; text-align: center;" readonly>
+
                 <div class="form-group">
-                    <label for="time" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Preferred time:</label>
-                    <input type="time" class="form-control" id="time" name="time" style="width: 200px; height: 50px; text-align: center;">
+                    <label for="time"
+                        style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 20px">Preferred
+                        time:</label>
+                    <input type="time" class="form-control" id="time" name="time"
+                        style="width: 200px; height: 40px; text-align: center;">
                 </div>
 
-                    <div id="weatherDisplay" class="weather-data" style="display: none;">
-                        <h3>Weather Information:</h3>
-                        <p><span class="label">Temperature:</span> <span id="temperature"></span>°C</p>
-                        <p><span class="label">Visibility:</span> <span id="visibility"></span> km</p>
-                        <p><span class="label">Wind Speed:</span> <span id="wind_speed"></span> km/h</p>
-                        <p><span class="label">Wind Direction:</span> <span id="wind_dir"></span></p>
-                        <p><span class="label">Wind Degree:</span> <span id="wind_degree"></span>°</p>
-                        <button id="downloadBtn" class="btn btn-success">Download CSV</button>
-                    </div>
+                <div class="form-group">
+                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center; margin: auto; padding-top: 20px">Target
+                        Altitude (in feet):</label>
+                    <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000"
+                        style="width: 200px; height: 50px; text-align: center;">
                 </div>
+                       
 
-                <div class="container">
-                     <h2>Select a Launch Coordinate on the Map Below</h2>  
-                <div id="map" style="height: 500px;">
         </div>
-    <div> 
-    <p>Launch Coordinates: <span id="launchcoord">Not Selected</span></p>
-    </div>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-       <script>
-        var map = L.map('map').setView([38.92171859741211, -77.23397064208984], 13); // Default to Cvent HQ
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
+        <div class="container">
+            <h2>Select a Launch Coordinate on the Map Below</h2>
+            <div id="map" style="height: 500px;">
+            </div>
+            <div>
+                <p>Launch Coordinates: <span id="launchcoord">Not Selected</span></p>
+            </div>
+            <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+            
+             </div> 
+        </div>
 
-        let launchMarker; // Initialize marker
-        let launchcoord = null; // Store the launch coordinates
+        <div class="form-group">
+            <label for="lat" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Latitude
+                Coordinates:</label>
+            <input type="text" class="form-control" id="lat" name="lat"
+                style="width: 200px; height: 50px; text-align: center">
+        </div>
+        <div class="form-group">
+            <label for="lng" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Longitude
+                Coordinates:</label>
+            <input type="text" class="form-control" id="lng" name="lng"
+                style="width: 200px; height: 50px; text-align: center;">
+        </div>
+        
+        <button id="subbut" type="submit" class="btn btn-primary my-3 btn-lrg">Submit</button>
 
-
-        map.on('click', function(e) { 
-            launchcoord = e.latlng; // Store coordinates
-            if (launchMarker) {
-                map.removeLayer(launchMarker);
-            }
-            launchMarker = L.marker(e.latlng).addTo(map);
-        document.getElementById("launchcoord").innerText = `${e.latlng.lat}, ${e.latlng.lng}`;
-        });
-        </script>
-    </div>
-</div>
-               
-                <div class="form-group">
-                    <label for="lat" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Latitude Coordinates:</label>
-                    <input type="text" class="form-control" id="lat" name="lat" style="width: 200px; height: 50px; text-align: center">
-                
-                </div>
-                <div class="form-group">
-                    <label for="lng" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Longitude Coordinates:</label>
-                    <input type="text" class="form-control" id="lng" name="lng" style="width: 200px; height: 50px; text-align: center;">
-                
-                </div>
-
-                <div class="form-group">
-                    <label for="alt" style="font-family: Arial, sans-serif; text-align: center; margin: auto;">Target Altitude:</label>
-                    <input type="number" class="form-control" id="alt" name="alt" min="0" max="100000" style="width: 200px; height: 50px; text-align: center;">
-              
-    
-              
-                </div>
-                <button id="subbut" type="submit" class="btn btn-primary my-3 btn-lrg">Submit</button>
-                </form>
-     </div>
+        <div id="weatherDisplay" class="weather-data" style="display: none;">
+            <h3>Weather Information:</h3>
+            <p><span class="label">Temperature:</span> <span id="temperature"></span>°C</p>
+            <p><span class="label">Visibility:</span> <span id="visibility"></span> km</p>
+            <p><span class="label">Wind Speed:</span> <span id="wind_speed"></span> km/h</p>
+            <p><span class="label">Wind Direction:</span> <span id="wind_dir"></span></p>
+            <p><span class="label">Wind Degree:</span> <span id="wind_degree"></span>°</p>
+            <p>Higher launch scores means a better chance of a successful flight.</p>
+            <button id="downloadBtn" class="btn btn-success">Show Launch Score</button>
+        </div>
+        </form>
+        </div>
     </main>
-    
+
     <script>
+                var map = L.map('map').setView([38.92171859741211, -77.23397064208984], 13); // Default to Cvent HQ
 
-    function validateInput(){
-        let time = document.getElementById("time");
-        let lat = document.getElementById("lat");
-        let lng = document.getElementById("lng");
-        let alt = document.getElementById("alt");
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(map);
 
-        let dateError = document.getElementById("dateError");
-        let timeError = document.getElementById("timeError");
-        let latError = document.getElementById("latError");
-        let lngError = document.getElementById("lngError");
-        let altError = document.getElementById("altError");
-        let valid = true;
+                let launchMarker; // Initialize marker
+                let launchcoord = null; // Store the launch coordinates
+
+
+                map.on('click', function (e) {
+                    launchcoord = e.latlng; // Store coordinates
+                    if (launchMarker) {
+                        map.removeLayer(launchMarker);
+                    }
+                    launchMarker = L.marker(e.latlng).addTo(map);
+                    document.getElementById("launchcoord").innerText = `${e.latlng.lat}, ${e.latlng.lng}`;
+                });
+
+                const start = document.getElementById('start');
+
+                    start.addEventListener('change', function () {
+                        const startDate = new Date(start.value);
+                        const endDate = new Date(startDate);
+                        endDate.setDate(startDate.getDate() + 7);
+                        end.value = endDate.toISOString().split('T')[0];
+                    });
+
+        function validateInput() {
+            let date = document.getElementById("date");
+            let time = document.getElementById("time");
+            let lat = document.getElementById("lat");
+            let lng = document.getElementById("lng");
+            let alt = document.getElementById("alt");
+
+            let dateError = document.getElementById("dateError");
+            let timeError = document.getElementById("timeError");
+            let latError = document.getElementById("latError");
+            let lngError = document.getElementById("lngError");
+            let altError = document.getElementById("altError");
+            let valid = true;
 
             dateError.innerText = "";
             timeError.innerText = "";
             latError.innerText = "";
             lngError.innerText = "";
-            altError .innerText = "";
+            altError.innerText = "";
 
-            if(!date.value) {
+            if (!date.value) {
                 dateError.innerText = "Date is required";
                 valid = false;
             }
 
-            if(!time) {
+            if (!time) {
                 timeError.innerText = "Time is required";
                 valid = false;
             }
 
-            if(!lat) {
+            if (!lat) {
                 latError.innerText = "Latatude Coordinates are required";
                 valid = false;
             }
-            
-            if(!lng) {
+
+            if (!lng) {
                 lngError.innerText = "Longitude Coordinates are required";
                 valid = false;
             }
 
-            if(!alt) {
+            if (!alt) {
                 altError.innerText = "Target Altitude is required";
                 valid = false;
             }
 
-            
+
         }
         function saveToSessionStorage() {
-        let inputDate = document.getElementById("date").value;
-        sessionStorage.setItem("storedInputDate", inputDate);
+            let inputStart = document.getElementById("start").value;
+            sessionStorage.setItem("storedInputStart", inputDate);
 
-        let inputTime = document.getElementById("time").value;
-        sessionStorage.setItem("storedInputTime", inputTime);
+            let inputEnd = document.getElementById("end").value;
+            sessionStorage.setItem("storedInputEnd", inputDate);
 
-        let inputLat = document.getElementById("lat").value;
-        sessionStorage.setItem("storedInputLat", inputStart);
+            let inputTime = document.getElementById("time").value;
+            sessionStorage.setItem("storedInputTime", inputTime);
 
-        let inputLng = document.getElementById("lng").value;
-        sessionStorage.setItem("storedInputLng", inputStart);
+            let inputLat = document.getElementById("lat").value;
+            sessionStorage.setItem("storedInputLat", inputStart);
 
-        let inputALT = document.getElementById("alt").value;
-        sessionStorage.setItem("storedInputALT", inputALT);
-    }                
+            let inputLng = document.getElementById("lng").value;
+            sessionStorage.setItem("storedInputLng", inputStart);
 
-    function loadFromSessionStorage() {
-        let storedInputDate = sessionStorage.getItem("storedInputDate");
-        document.getElementById("date").value = storedInputDate || "";
-
-        let storedTime = sessionStorage.getItem("storedInputTime");
-        document.getElementById("time").value = storedTime || "";
-
-        let storedLat= sessionStorage.getItem("storedInputLat");
-        document.getElementById("lat").value = storedLat || "";
-
-        let storedLng = sessionStorage.getItem("storedInputLng");
-        document.getElementById("lng").value = storedLng || "";
-
-        let stoedInputALT = sessionStorage.getItem("storedInputALT");
-        document.getElementById("alt").value = storedInputALT || "";
-    }
-</script>
-<script>
-    async function submitAPI(event) {
-        event.preventDefault(); // Prevent form submission
-
-        const apiKey = "ede9bdc71170183ac05121894b3bec8c";
-        const lat = document.getElementById('lat').value;
-        const lng = document.getElementById('lng').value;
-        const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${lng}`;
-
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            // Extract data from the JSON response
-            const temperature = result.current.temperature;
-            const visibility = result.current.visibility;
-            const wind_speed = result.current.wind_speed;
-            const wind_degree = result.current.wind_degree;
-            const wind_dir = result.current.wind_dir;
-
-            // Display the weather data
-            document.getElementById('temperature').textContent = temperature;
-            document.getElementById('visibility').textContent = visibility;
-            document.getElementById('wind_speed').textContent = wind_speed;
-            document.getElementById('wind_dir').textContent = wind_dir;
-            document.getElementById('wind_degree').textContent = wind_degree;
-
-            // Make the weather display section visible
-            document.getElementById('weatherDisplay').style.display = 'block';
-
-            // Enable the download button
-            document.getElementById('downloadBtn').addEventListener('click', function() {
-                downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
-            });
-        } catch (error) {
-            console.error("Error fetching data: ", error);
-            alert("Error fetching weather data.");
+            let inputALT = document.getElementById("alt").value;
+            sessionStorage.setItem("storedInputALT", inputALT);
         }
-    }
 
-    function downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir) {
-        // Prepare the CSV data
-        const csvData = [
-            ['Temperature', 'Visibility', 'Wind Speed', 'Wind Direction', 'Wind Degree'],
-            [temperature, visibility, wind_speed, wind_dir, wind_degree]
-        ];
+        function loadFromSessionStorage() {
+            let storedInputStart = sessionStorage.getItem("storedInputStart");
+            document.getElementById("start").value = storedInputDate || "";
 
-        // Convert array to CSV format
-        const csvContent = csvData.map(row => row.join(',')).join('\n');
+            let storedInputEnd = sessionStorage.getItem("storedInputEnd");
+            document.getElementById("end").value = storedInputDate || "";
 
-        // Create a Blob object with the CSV content
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'weather_data.csv';
+            let storedTime = sessionStorage.getItem("storedInputTime");
+            document.getElementById("time").value = storedTime || "";
 
-        // Programmatically click the link to trigger the download
-        link.click();
-    }
-</script>
+            let storedLat = sessionStorage.getItem("storedInputLat");
+            document.getElementById("lat").value = storedLat || "";
+
+            let storedLng = sessionStorage.getItem("storedInputLng");
+            document.getElementById("lng").value = storedLng || "";
+
+            let stoedInputALT = sessionStorage.getItem("storedInputALT");
+            document.getElementById("alt").value = storedInputALT || "";
+        }
+    </script>
+    <script>
+        async function submitAPI(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const apiKey = "ede9bdc71170183ac05121894b3bec8c";
+            const lat = document.getElementById('lat').value;
+            const lng = document.getElementById('lng').value;
+            const url = `https://api.weatherstack.com/current?access_key=${apiKey}&query=${lat},${lng}`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Extract data from the JSON response
+                const temperature = result.current.temperature;
+                const visibility = result.current.visibility;
+                const wind_speed = result.current.wind_speed;
+                const wind_degree = result.current.wind_degree;
+                const wind_dir = result.current.wind_dir;
+
+                // Display the weather data
+                document.getElementById('temperature').textContent = temperature;
+                document.getElementById('visibility').textContent = visibility;
+                document.getElementById('wind_speed').textContent = wind_speed;
+                document.getElementById('wind_dir').textContent = wind_dir;
+                document.getElementById('wind_degree').textContent = wind_degree;
+
+                // Make the weather display section visible
+                document.getElementById('weatherDisplay').style.display = 'block';
+
+                // Enable the download button
+                document.getElementById('downloadBtn').addEventListener('click', function () {
+                    downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir);
+                });
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                alert("Error fetching weather data.");
+            }
+        }
+
+        function downloadCSV(temperature, visibility, wind_speed, wind_degree, wind_dir) {
+            // Prepare the CSV data
+            const csvData = [
+                ['Temperature', 'Visibility', 'Wind Speed', 'Wind Direction', 'Wind Degree'],
+                [temperature, visibility, wind_speed, wind_dir, wind_degree]
+            ];
+
+            // Convert array to CSV format
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+
+            // Create a Blob object with the CSV content
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'weather_data.csv';
+
+            // Programmatically click the link to trigger the download
+            link.click();
+        }
+    </script>
 </body>
+
 </html>
