@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <title>Kairos Launch</title>
 </head>
 <style>
@@ -53,13 +57,13 @@ h1{
 <body style="background-color: rgb(240, 240, 240);">
     <header>
         <div class="container">
-            <h1 class="textcenter"
-                style="color: black; text-align: center; font-family: Arial, sans-serif; padding-top: 20px; padding-bottom: 20px;">
-                Kairos Launch</h1>
+            <h1 class="text-center" style="color: black; font-family: Arial, sans-serif; padding-top: 20px; padding-bottom: 20px;">
+                Kairos Launch
+            </h1>
             <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #000; color: white;">
                 <a class="navbar-brand" href="index.html" style="color: white;">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false">
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon" style="color: white;"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -68,11 +72,11 @@ h1{
                             <a class="nav-link" href="about.html" style="color: white;">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor"
-                                style="color: white;">Github</a>
+                            <a class="nav-link" href="https://github.com/Superguineapig8/HackTJ-2025-Launch-Predictor" style="color: white;">Github</a>
                         </li>
                     </ul>
                 </div>
+            </nav>
         </div>
     </header>
 
@@ -87,16 +91,9 @@ h1{
         <h4>This is a website made for any rocketry enthusuiast or team, we created this as a versatile site for anyone.
             If for example, you wish to launch a rocket on a specific day in a specific location, our algorithm shows
             you if that is a good time to launch, or whether or not you should reconsider.
-            You need to insert some data values and our site does the rest. Our profesionally createdd ML algorithm will
+            You need to insert some data values and our site does the rest. Our profesionally created ML algorithm will
             tell you the best launch window and will help speed up all of your persuits.
         </h4>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
-        <img src="image(1).png" width="200px"></img>
         
         <h1>About Us</h1>
          
@@ -110,7 +107,7 @@ h1{
         <p>Hi! I'm Frances and I'm a sophomore at TJHSST. I worked on the front and back end of this project, focusing on the user interface and the functionality of the submit button and calculating your launch success rate. I also designed this about page. </p>
         <h3>Hayden</h3>
          
-        <p>Hello! I'm Hayden and I'm a freshman at TJHSST. I worked on front-end development, including the map elements, and basic UI. I also work on some front to back end intergration that was criticial for API requests. This is my first year in CS, but I'm really passionate in CS and cybersecurity.<p>
+        <p>Hello! I'm Hayden and I'm a freshman at TJHSST. I worked on front-end development, including the map elements, and basic UI. I also work on some front to back end intergration that was criticial for API requests, as well as developing the ML model. This is my first year in CS, but I'm really passionate in CS and cybersecurity.</p>
         <h3>Justin</h3>
          
         <p>Hey! I am Justin and I'm a freshman at TJ. I worked on front-end development and some backend integration. I am a big fan of CS and love applying it to anything I can while troubleshooting the logic problems along the way. Although this is my first year in a CS course, I already know I want to continue with this. Shoutout to the tra-mazing Mr. Tra!!!</p>
